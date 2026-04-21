@@ -9,15 +9,14 @@ The objective of this project is to design, implement, assess a data architectur
 
 ##  Repository Structure
 
-
-ppg-database-design/
-├── README.md
-├── sql/
-│   ├── 1. db/creation_script.sql
-│   ├── 2. enable_TimescaleDB.sql
-│   └── 3. test_inserts.sql
-└── models/
-    ├── logical/
+ppg-database-design/<br>
+├── README.md<br>
+├── sql/<br>
+│   ├── 1. db/creation_script.sql<br>
+│   ├── 2. enable_TimescaleDB.sql<br>
+│   └── 3. test_inserts.sql<br>
+└── models/<br>
+    ├── logical/<br>
     └── physical/
 
 
