@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      PostgreSQL 9.x                               */
-/* Created on:     20/04/2026 6:33:04�p.�m.                     */
+/* Created on:     22/04/2026 2:40:07�p.�m.                     */
 /*==============================================================*/
 
 
@@ -76,6 +76,26 @@ ID_COUNTRY
 );
 
 /*==============================================================*/
+/* Table: COMPUTE_STATUS                                        */
+/*==============================================================*/
+create table COMPUTE_STATUS (
+   ID_COMPUTE_STATUS    INT8                 not null,
+   NAME                 VARCHAR(50)          not null,
+   DESCRIPTION          VARCHAR(255)         not null,
+   constraint PK_COMPUTE_STATUS primary key (ID_COMPUTE_STATUS)
+);
+
+comment on table COMPUTE_STATUS is
+'Catalog of the processing status of a monitoring session.';
+
+/*==============================================================*/
+/* Index: COMPUTE_STATUS_PK                                     */
+/*==============================================================*/
+create unique index COMPUTE_STATUS_PK on COMPUTE_STATUS (
+ID_COMPUTE_STATUS
+);
+
+/*==============================================================*/
 /* Table: COUNTRY                                               */
 /*==============================================================*/
 create table COUNTRY (
@@ -133,13 +153,17 @@ create table MEASUREMENT (
    ID_MEASUREMENT       INT4                 not null,
    ID_METRIC_TYPE       INT4                 not null,
    ID_SESSION           INT4                 null,
-   VALUE                DECIMAL(10,4)        not null,
+   VALUE                DECIMAL(10,4)        null,
+   ALERT_MESSAGE        VARCHAR(255)         null,
    RECORDED_AT          DATE                 not null,
    constraint PK_MEASUREMENT primary key (ID_MEASUREMENT)
 );
 
 comment on table MEASUREMENT is
 'Table that stores recorded metrics, which can be of different types.';
+
+comment on column MEASUREMENT.ALERT_MESSAGE is
+'Alert or error message explaining why it was not possible to calculate the value';
 
 /*==============================================================*/
 /* Index: MEASUREMENT_PK                                        */
@@ -192,11 +216,12 @@ ID_METRIC_TYPE
 create table MONITORING_SESSION (
    ID_SESSION           INT4                 not null,
    ID_USER              INT4                 not null,
+   ID_COMPUTE_STATUS    INT8                 null,
    DATE_TIME            DATE                 not null,
    CREATED_AT           DATE                 null,
    UPDATED_AT           DATE                 null,
    IS_DELTA_ENCODED     BOOL                 null,
-   ATRIAL_FIBRILLATION_PRESENT BOOL                 not null,
+   ATRIAL_FIBRILLATION_PRESENT BOOL                 null,
    AF_CONFIDENCE_SCORE  DECIMAL(4,3)         null,
    constraint PK_MONITORING_SESSION primary key (ID_SESSION)
 );
@@ -222,28 +247,10 @@ ID_USER
 );
 
 /*==============================================================*/
-/* Table: NOTIFICATION                                          */
+/* Index: MONITORING_SIN_C_S_FK                                 */
 /*==============================================================*/
-create table NOTIFICATION (
-   ID_NOTIFICATION      INT4                 not null,
-   ID_ALERT             INT4                 null,
-   MESSAGE              VARCHAR(255)         not null,
-   SENT_AT              DATE                 not null,
-   constraint PK_NOTIFICATION primary key (ID_NOTIFICATION)
-);
-
-/*==============================================================*/
-/* Index: NOTIFICATION_PK                                       */
-/*==============================================================*/
-create unique index NOTIFICATION_PK on NOTIFICATION (
-ID_NOTIFICATION
-);
-
-/*==============================================================*/
-/* Index: ALERT_NOTIFICATION_FK                                 */
-/*==============================================================*/
-create  index ALERT_NOTIFICATION_FK on NOTIFICATION (
-ID_ALERT
+create  index MONITORING_SIN_C_S_FK on MONITORING_SESSION (
+ID_COMPUTE_STATUS
 );
 
 /*==============================================================*/
@@ -252,7 +259,7 @@ ID_ALERT
 create table PPG_SAMPLE (
    ID_PPG_SAMPLE        INT8                 not null,
    ID_SESSION           INT4                 null,
-   TS          INT8                 null,
+   TS         INT8                 null,
    GREEN_               INT4                 not null,
    RED_                 INT4                 null,
    IR                   INT4                 null,
@@ -260,7 +267,7 @@ create table PPG_SAMPLE (
 );
 
 comment on table PPG_SAMPLE is
-'PPG signal sample';
+'PPG signal sample.';
 
 /*==============================================================*/
 /* Index: PPG_SAMPLE_PK                                         */
@@ -270,9 +277,9 @@ ID_PPG_SAMPLE
 );
 
 /*==============================================================*/
-/* Index: M_SESSION_PPG_SAMPLE_FK                               */
+/* Index: MS_PPG_SAMPLE_FK                                      */
 /*==============================================================*/
-create  index M_SESSION_PPG_SAMPLE_FK on PPG_SAMPLE (
+create  index MS_PPG_SAMPLE_FK on PPG_SAMPLE (
 ID_SESSION
 );
 
@@ -419,7 +426,7 @@ create table WEARABLE_STATUS (
 );
 
 comment on table WEARABLE_STATUS is
-'Wearable Status Catalog';
+'Wearable Status Catalog, Expected statuses: ACTIVE (in use), INACTIVE (not in use), DISCONNECTED (no BT signal), MAINTENANCE (under review)';
 
 /*==============================================================*/
 /* Index: WEARABLE_STATUS_PK                                    */
@@ -459,13 +466,13 @@ alter table MEASUREMENT
       on delete restrict on update restrict;
 
 alter table MONITORING_SESSION
-   add constraint FK_MONITORI_USER_SESS_USER foreign key (ID_USER)
-      references "USER" (ID_USER)
+   add constraint FK_MONITORI_COMPUTE_M_COMPUTE_ foreign key (ID_COMPUTE_STATUS)
+      references COMPUTE_STATUS (ID_COMPUTE_STATUS)
       on delete restrict on update restrict;
 
-alter table NOTIFICATION
-   add constraint FK_NOTIFICA_ALERT_NOT_ALERT foreign key (ID_ALERT)
-      references ALERT (ID_ALERT)
+alter table MONITORING_SESSION
+   add constraint FK_MONITORI_USER_SESS_USER foreign key (ID_USER)
+      references "USER" (ID_USER)
       on delete restrict on update restrict;
 
 alter table PPG_SAMPLE
