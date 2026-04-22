@@ -144,4 +144,4 @@ SELECT
 FROM monitoring_session ms
 JOIN ppg_sample p ON p.id_session = ms.id_session
 WHERE ms.id_session = 1
-GROUP BY ms.id_session, ms.id_user, ms.atrial_fibrillation_present;les WHERE schemaname = 'public';
+GROUP BY ms.id_session, ms.id_user, ms.atrial_fibrillation_present;
