@@ -3,8 +3,6 @@
 /* Created on:     22/04/2026 2:40:07�p.�m.                     */
 /*==============================================================*/
 
-
-
 /*==============================================================*/
 /* Table: ALERT                                                 */
 /*==============================================================*/
@@ -46,6 +44,46 @@ ID_SESSION
 /*==============================================================*/
 create  index SEVERITY_LEVEL_ALERT_FK on ALERT (
 ID_SEVERITY_LEVEL_
+);
+
+/*==============================================================*/
+/* Table: APP_USER                                              */
+/*==============================================================*/
+create table APP_USER (
+   ID_USER              INT4                 not null,
+   ID_CITY              INT4                 null,
+   EMAIL                VARCHAR(50)          not null,
+   PASSWORD_HASH        VARCHAR(255)         not null,
+   FIRST_NAME           VARCHAR(50)          not null,
+   LAST_NAME            VARCHAR(50)          not null,
+   BIRTH_DATE           DATE                 not null,
+   CREATED_AT           DATE                 null,
+   UPDATED_AT           DATE                 null,
+   constraint PK_APP_USER primary key (ID_USER),
+   constraint AK_AK_USER_EMAIL_APP_USER unique (EMAIL)
+);
+
+comment on table APP_USER is
+'Table that stores basic system user information';
+
+comment on column APP_USER.CREATED_AT is
+'Audit Fields';
+
+comment on column APP_USER.UPDATED_AT is
+'Audit Fields';
+
+/*==============================================================*/
+/* Index: USER_PK                                               */
+/*==============================================================*/
+create unique index USER_PK on APP_USER (
+ID_USER
+);
+
+/*==============================================================*/
+/* Index: USER_CITY_FK                                          */
+/*==============================================================*/
+create  index USER_CITY_FK on APP_USER (
+ID_CITY
 );
 
 /*==============================================================*/
@@ -154,7 +192,7 @@ create table MEASUREMENT (
    ID_METRIC_TYPE       INT4                 not null,
    ID_SESSION           INT4                 null,
    VALUE                DECIMAL(10,4)        null,
-   ALERT_MESSAGE        VARCHAR(255)         null,
+   ERROR_MESSAGE        VARCHAR(255)         null,
    RECORDED_AT          DATE                 not null,
    constraint PK_MEASUREMENT primary key (ID_MEASUREMENT)
 );
@@ -162,7 +200,7 @@ create table MEASUREMENT (
 comment on table MEASUREMENT is
 'Table that stores recorded metrics, which can be of different types.';
 
-comment on column MEASUREMENT.ALERT_MESSAGE is
+comment on column MEASUREMENT.ERROR_MESSAGE is
 'Alert or error message explaining why it was not possible to calculate the value';
 
 /*==============================================================*/
@@ -221,8 +259,6 @@ create table MONITORING_SESSION (
    CREATED_AT           DATE                 null,
    UPDATED_AT           DATE                 null,
    IS_DELTA_ENCODED     BOOL                 null,
-   ATRIAL_FIBRILLATION_PRESENT BOOL                 null,
-   AF_CONFIDENCE_SCORE  DECIMAL(4,3)         null,
    constraint PK_MONITORING_SESSION primary key (ID_SESSION)
 );
 
@@ -247,9 +283,9 @@ ID_USER
 );
 
 /*==============================================================*/
-/* Index: MONITORING_SIN_C_S_FK                                 */
+/* Index: FK_MONITORI_USER_SESS_USER                            */
 /*==============================================================*/
-create  index MONITORING_SIN_C_S_FK on MONITORING_SESSION (
+create  index FK_MONITORI_USER_SESS_USER on MONITORING_SESSION (
 ID_COMPUTE_STATUS
 );
 
@@ -259,7 +295,7 @@ ID_COMPUTE_STATUS
 create table PPG_SAMPLE (
    ID_PPG_SAMPLE        INT8                 not null,
    ID_SESSION           INT4                 null,
-   TS         INT8                 null,
+   TS                   INT8                 null,
    GREEN_               INT4                 not null,
    RED_                 INT4                 null,
    IR                   INT4                 null,
@@ -302,52 +338,11 @@ ID_SEVERITY_LEVEL_
 );
 
 /*==============================================================*/
-/* Table: "USER"                                                */
-/*==============================================================*/
-create table "USER" (
-   ID_USER              INT4                 not null,
-   ID_CITY              INT4                 null,
-   EMAIL                VARCHAR(50)          not null,
-   PASSWORD_HASH        VARCHAR(255)         not null,
-   FIRST_NAME           VARCHAR(50)          not null,
-   LAST_NAME            VARCHAR(50)          not null,
-   BIRTH_DATE           DATE                 not null,
-   CREATED_AT           DATE                 null,
-   UPDATED_AT           DATE                 null,
-   constraint PK_USER primary key (ID_USER),
-   constraint AK_AK_USER_EMAIL_USER unique (EMAIL)
-);
-
-comment on table "USER" is
-'Table that stores basic system user information';
-
-comment on column "USER".CREATED_AT is
-'Audit Fields';
-
-comment on column "USER".UPDATED_AT is
-'Audit Fields';
-
-/*==============================================================*/
-/* Index: USER_PK                                               */
-/*==============================================================*/
-create unique index USER_PK on "USER" (
-ID_USER
-);
-
-/*==============================================================*/
-/* Index: USER_CITY_FK                                          */
-/*==============================================================*/
-create  index USER_CITY_FK on "USER" (
-ID_CITY
-);
-
-/*==============================================================*/
 /* Table: WEARABLE                                              */
 /*==============================================================*/
 create table WEARABLE (
    ID_WEARABLE          INT4                 not null,
    ID_USER              INT4                 null,
-   ID_WEARABLE_STATUS   INT4                 null,
    ID_WEARABLE_MODEL    INT4                 null,
    MAC_ADDRESS          VARCHAR(17)          null,
    CREATED_AT           DATE                 not null,
@@ -382,13 +377,6 @@ ID_USER
 );
 
 /*==============================================================*/
-/* Index: STATUS_WEARABLE_FK                                    */
-/*==============================================================*/
-create  index STATUS_WEARABLE_FK on WEARABLE (
-ID_WEARABLE_STATUS
-);
-
-/*==============================================================*/
 /* Index: MODEL_WEARABLE_FK                                     */
 /*==============================================================*/
 create  index MODEL_WEARABLE_FK on WEARABLE (
@@ -415,26 +403,6 @@ create unique index WEARABLE_MODEL_PK on WEARABLE_MODEL (
 ID_WEARABLE_MODEL
 );
 
-/*==============================================================*/
-/* Table: WEARABLE_STATUS                                       */
-/*==============================================================*/
-create table WEARABLE_STATUS (
-   ID_WEARABLE_STATUS   INT4                 not null,
-   NAME                 VARCHAR(20)          not null,
-   DESCRIPTION          VARCHAR(255)         null,
-   constraint PK_WEARABLE_STATUS primary key (ID_WEARABLE_STATUS)
-);
-
-comment on table WEARABLE_STATUS is
-'Wearable Status Catalog, Expected statuses: ACTIVE (in use), INACTIVE (not in use), DISCONNECTED (no BT signal), MAINTENANCE (under review)';
-
-/*==============================================================*/
-/* Index: WEARABLE_STATUS_PK                                    */
-/*==============================================================*/
-create unique index WEARABLE_STATUS_PK on WEARABLE_STATUS (
-ID_WEARABLE_STATUS
-);
-
 alter table ALERT
    add constraint FK_ALERT_MONITORIN_MONITORI foreign key (ID_SESSION)
       references MONITORING_SESSION (ID_SESSION)
@@ -445,14 +413,19 @@ alter table ALERT
       references SEVERITY_LEVEL (ID_SEVERITY_LEVEL_)
       on delete restrict on update restrict;
 
+alter table APP_USER
+   add constraint FK_APP_USER_USER_CITY_CITY foreign key (ID_CITY)
+      references CITY (ID_CITY)
+      on delete restrict on update restrict;
+
 alter table CITY
    add constraint FK_CITY_COUNTRY_C_COUNTRY foreign key (ID_COUNTRY)
       references COUNTRY (ID_COUNTRY)
       on delete restrict on update restrict;
 
 alter table HEALTH_RECORD
-   add constraint FK_HEALTH_R_USER_USER_USER foreign key (ID_USER)
-      references "USER" (ID_USER)
+   add constraint FK_HEALTH_R_USER_USER_APP_USER foreign key (ID_USER)
+      references APP_USER (ID_USER)
       on delete restrict on update restrict;
 
 alter table MEASUREMENT
@@ -471,18 +444,13 @@ alter table MONITORING_SESSION
       on delete restrict on update restrict;
 
 alter table MONITORING_SESSION
-   add constraint FK_MONITORI_USER_SESS_USER foreign key (ID_USER)
-      references "USER" (ID_USER)
+   add constraint FK_MONITORI_USER_SESS_APP_USER foreign key (ID_USER)
+      references APP_USER (ID_USER)
       on delete restrict on update restrict;
 
 alter table PPG_SAMPLE
    add constraint FK_PPG_SAMP_MS_PPG_SA_MONITORI foreign key (ID_SESSION)
       references MONITORING_SESSION (ID_SESSION)
-      on delete restrict on update restrict;
-
-alter table "USER"
-   add constraint FK_USER_USER_CITY_CITY foreign key (ID_CITY)
-      references CITY (ID_CITY)
       on delete restrict on update restrict;
 
 alter table WEARABLE
@@ -491,12 +459,7 @@ alter table WEARABLE
       on delete restrict on update restrict;
 
 alter table WEARABLE
-   add constraint FK_WEARABLE_STATUS_WE_WEARABLE foreign key (ID_WEARABLE_STATUS)
-      references WEARABLE_STATUS (ID_WEARABLE_STATUS)
-      on delete restrict on update restrict;
-
-alter table WEARABLE
-   add constraint FK_WEARABLE_WEARABLE__USER foreign key (ID_USER)
-      references "USER" (ID_USER)
+   add constraint FK_WEARABLE_WEARABLE__APP_USER foreign key (ID_USER)
+      references APP_USER (ID_USER)
       on delete restrict on update restrict;
 

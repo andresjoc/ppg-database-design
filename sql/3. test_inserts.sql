@@ -1,4 +1,3 @@
-
 --Test insert data for the wearable monitoring system
 
 -- Country and city
@@ -6,27 +5,21 @@ INSERT INTO country (id_country, name) VALUES (1, 'Colombia');
 INSERT INTO city (id_city, id_country, name) VALUES (1, 1, 'Bogotá');
 
 -- User
-INSERT INTO "USER" (id_user, id_city, email, password_hash, first_name, last_name, birth_date)
+INSERT INTO App_user (id_user, id_city, email, password_hash, first_name, last_name, birth_date)
 VALUES (1, 1, 'test@email.com', 'hash123', 'Juan', 'Pérez', '1990-01-01');
 
--- Wearable model and status
+-- Wearable model 
 INSERT INTO wearable_model (id_wearable_model, brand, model) 
 VALUES (1, 'Galaxy', 'H10');
 
--- wereable status
-INSERT INTO WEARABLE_STATUS (ID_WEARABLE_STATUS, NAME, DESCRIPTION) VALUES
-(1, 'ACTIVE',       'Device currently in use by the user'),
-(2, 'INACTIVE',     'Device registered but not currently in use'),
-(3, 'DISCONNECTED', 'Device has no Bluetooth signal'),
-(4, 'MAINTENANCE',  'Device under technical review or repair');
 
 -- Wearable
-INSERT INTO wearable (id_wearable, id_user, id_wearable_status, id_wearable_model, mac_address, created_at)
-VALUES (1, 1, 1, 1, 'AA:BB:CC:DD:EE:FF', now());
+INSERT INTO wearable (id_wearable, id_user,  id_wearable_model, mac_address, created_at)
+VALUES (1, 1,  1, 'AA:BB:CC:DD:EE:FF', now());
 
 -- Monitoring session
-INSERT INTO monitoring_session (id_session, id_user, date_time, atrial_fibrillation_present)
-VALUES (1, 1, now(), false);
+INSERT INTO monitoring_session (id_session, id_user, date_time)
+VALUES (1, 1, now());
 
 
 -- ──  Test data (PPG datapoints) ───────────
@@ -137,7 +130,6 @@ VALUES
 SELECT 
     ms.id_session,
     ms.id_user,
-    ms.atrial_fibrillation_present  AS fibrilacion_auricular,
     COUNT(p.id_ppg_sample)          AS total_muestras,
     MIN(to_timestamp(p.ts/1000.0))  AS inicio,
     MAX(to_timestamp(p.ts/1000.0))  AS fin,
@@ -145,4 +137,4 @@ SELECT
 FROM monitoring_session ms
 JOIN ppg_sample p ON p.id_session = ms.id_session
 WHERE ms.id_session = 1
-GROUP BY ms.id_session, ms.id_user, ms.atrial_fibrillation_present;les WHERE schemaname = 'public';
+GROUP BY ms.id_session, ms.id_user;
