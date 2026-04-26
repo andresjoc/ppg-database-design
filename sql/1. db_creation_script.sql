@@ -345,8 +345,8 @@ create table WEARABLE (
    ID_USER              INT4                 null,
    ID_WEARABLE_MODEL    INT4                 null,
    MAC_ADDRESS          VARCHAR(17)          null,
-   CREATED_AT           DATE                 not null,
-   UPDATED_AT           DATE                 null,
+   CREATED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   UPDATED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
    constraint PK_WEARABLE primary key (ID_WEARABLE)
 );
 
