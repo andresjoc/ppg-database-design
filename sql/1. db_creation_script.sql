@@ -256,8 +256,8 @@ create table MONITORING_SESSION (
    ID_USER              INT4                 not null,
    ID_COMPUTE_STATUS    INT8                 null,
    DATE_TIME            DATE                 not null,
-   CREATED_AT           DATE                 null,
-   UPDATED_AT           DATE                 null,
+   CREATED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   UPDATED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
    IS_DELTA_ENCODED     BOOL                 null,
    constraint PK_MONITORING_SESSION primary key (ID_SESSION)
 );
