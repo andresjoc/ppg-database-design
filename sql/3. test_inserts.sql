@@ -1,5 +1,5 @@
 --Test insert data for the wearable monitoring system
-
+ 
 -- Country and city
 INSERT INTO country (id_country, name) VALUES (1, 'Colombia');
 INSERT INTO city (id_city, id_country, name) VALUES (1, 1, 'Bogotá');
