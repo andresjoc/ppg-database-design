@@ -3,7 +3,7 @@
 -- Country and city
 INSERT INTO country (id_country, name) VALUES (1, 'Colombia');
 INSERT INTO city (id_city, id_country, name) VALUES (1, 1, 'Bogotá');
-
+ 
 -- User
 INSERT INTO App_user (id_user, id_city, email, password_hash, first_name, last_name, birth_date)
 VALUES (1, 1, 'test@email.com', 'hash123', 'Juan', 'Pérez', '1990-01-01');
