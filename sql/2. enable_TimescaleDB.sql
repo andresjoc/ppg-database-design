@@ -1,4 +1,4 @@
- 
+
 
 -- 1) Enable the extension
 CREATE EXTENSION IF NOT EXISTS timescaledb;
@@ -12,3 +12,5 @@ SELECT create_hypertable('ppg_sample', 'ts');
 --3) Select hypertables
 SELECT * FROM timescaledb_information.hypertables;
 SELECT tablename FROM pg_tables WHERE schemaname = 'public';
+
+SELECT version();

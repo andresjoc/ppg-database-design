@@ -3,12 +3,12 @@
 
 INSERT INTO COUNTRY (ID_COUNTRY, NAME) VALUES
 (1, 'Colombia'),
-(2, 'México');
+(2, 'MÃ©xico');
 
 INSERT INTO CITY (ID_CITY, ID_COUNTRY, NAME) VALUES
-(1, 1, 'Bogotá'),
-(2, 1, 'Medellín'),
-(3, 2, 'Ciudad de México');
+(1, 1, 'BogotÃ¡'),
+(2, 1, 'MedellÃ­n'),
+(3, 2, 'Ciudad de MÃ©xico');
 
 INSERT INTO COMPUTE_STATUS (ID_COMPUTE_STATUS, NAME, DESCRIPTION) VALUES
 (1, 'PENDING', 'Session waiting to be processed'),
@@ -23,28 +23,40 @@ INSERT INTO SEVERITY_LEVEL (ID_SEVERITY_LEVEL, NAME, DESCRIPTION) VALUES
 INSERT INTO METRIC_TYPE (ID_METRIC_TYPE, UNIT, MIN_VALUE, MAX_VALUE, IS_DERIVED, NAME) VALUES
 (1, 'bpm', 40.00, 200.00, false, 'Heart Rate'),
 (2, '%', 70.00, 100.00, false, 'Oxygen Saturation'),
-(3, 'ms', 0.00, 300.00, true, 'HRV');
+(3, 'ms', 0.00, 300.00, true, 'HRV'),
+(4, 'bool', 0, 1, false, 'Tachycardia Detected'),
+(5, '%', 0, 1, true, 'AF Confidence'),
+(6, 'bool', 0, 1, false, 'AF Detected');
+
 
 INSERT INTO WEARABLE_MODEL (ID_WEARABLE_MODEL, BRAND, MODEL) VALUES
-(1, 'Fitbit', 'Sense 2'),
-(2, 'Garmin', 'Vivosmart 5'),
-(3, 'Apple', 'Watch Series 9');
+(1, 'Samsung', 'Galaxy Watch 4'),
+(2, 'Samsung', 'Galaxy Watch 7'),
+(3, 'PineTime', 'Dev Kit');
 
 -- Usuarios
 INSERT INTO APP_USER (
-  ID_USER, ID_CITY, EMAIL, PASSWORD_HASH, FIRST_NAME, LAST_NAME, BIRTH_DATE
+  ID_USER, ID_CITY, EMAIL, FIRST_NAME, LAST_NAME, BIRTH_DATE
 ) VALUES
-(1, 1, 'ana.perez@test.com', 'hash_ana_123', 'Ana', 'Pérez', '1998-05-12'),
-(2, 2, 'carlos.gomez@test.com', 'hash_carlos_123', 'Carlos', 'Gómez', '1995-09-20'),
-(3, 3, 'laura.martinez@test.com', 'hash_laura_123', 'Laura', 'Martínez', '2000-01-15');
+(1, 1, 'ana.perez@test.com', 'Ana', 'Pérez', '1998-05-12'),
+(2, 2, 'carlos.gomez@test.com', 'Carlos', 'Gómez', '1995-09-20'),
+(3, 3, 'laura.martinez@test.com', 'Laura', 'Martínez', '2000-01-15');
+
+-- Credenciales de autenticación
+INSERT INTO AUTH_CREDENTIAL (
+  ID_CREDENTIAL, ID_USER, PASSWORD_HASH, IS_ACTIVE
+) VALUES
+(1, 1, 'hash_ana_123', true),
+(2, 2, 'hash_carlos_123', true),
+(3, 3, 'hash_laura_123', true);
 
 -- Wearables
 INSERT INTO WEARABLE (
-  ID_WEARABLE, ID_USER, ID_WEARABLE_MODEL, MAC_ADDRESS
+  ID_WEARABLE, ID_USER, ID_WEARABLE_MODEL
 ) VALUES
-(1, 1, 1, 'AA:BB:CC:DD:EE:01'),
-(2, 2, 2, 'AA:BB:CC:DD:EE:02'),
-(3, 3, 3, 'AA:BB:CC:DD:EE:03');
+(1, 1, 1),
+(2, 2, 2),
+(3, 3, 3);
 
 
 INSERT INTO HEALTH_RECORD (
@@ -55,11 +67,11 @@ INSERT INTO HEALTH_RECORD (
 (3, 3, 55.80, 160.2);
 
 INSERT INTO MONITORING_SESSION (
-  ID_SESSION, ID_USER, ID_COMPUTE_STATUS, DATE_TIME, IS_DELTA_ENCODED
+  ID_SESSION, ID_USER, ID_WEARABLE, ID_COMPUTE_STATUS, DATE_TIME, IS_DELTA_ENCODED
 ) VALUES
-(1, 1, 2, '2026-04-20', true),
-(2, 2, 2, '2026-04-21', false),
-(3, 3, 1, '2026-04-22', true);
+(1, 1, 1, 2, '2026-04-20', true),
+(2, 2, 2, 2, '2026-04-21', false),
+(3, 3, 3, 1, '2026-04-22', true);
 
 
 INSERT INTO MEASUREMENT (
@@ -96,6 +108,8 @@ SELECT setval('country_id_country_seq', COALESCE((SELECT MAX(id_country) FROM co
 SELECT setval('city_id_city_seq', COALESCE((SELECT MAX(id_city) FROM city), 1), true);
 
 SELECT setval('app_user_id_user_seq', COALESCE((SELECT MAX(id_user) FROM app_user), 1), true);
+
+SELECT setval('auth_credential_id_credential_seq', COALESCE((SELECT MAX(id_credential) FROM auth_credential), 1), true);
 
 SELECT setval('health_record_id_health_record_seq', COALESCE((SELECT MAX(id_health_record) FROM health_record), 1), true);
 
