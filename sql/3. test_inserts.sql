@@ -3,12 +3,17 @@
 
 INSERT INTO COUNTRY (ID_COUNTRY, NAME) VALUES
 (1, 'Colombia'),
-(2, 'MÃ©xico');
+(2, 'México');
 
-INSERT INTO CITY (ID_CITY, ID_COUNTRY, NAME) VALUES
-(1, 1, 'BogotÃ¡'),
-(2, 1, 'MedellÃ­n'),
-(3, 2, 'Ciudad de MÃ©xico');
+INSERT INTO REGION (ID_REGION, ID_COUNTRY, NAME) VALUES
+(1, 1, 'Cundinamarca'),
+(2, 1, 'Antioquia'),
+(3, 2, 'Ciudad de México');
+
+INSERT INTO CITY (ID_CITY, ID_REGION, NAME) VALUES
+(1, 1, 'Bogotá'),
+(2, 2, 'Medellín'),
+(3, 3, 'Ciudad de México');
 
 INSERT INTO COMPUTE_STATUS (ID_COMPUTE_STATUS, NAME, DESCRIPTION) VALUES
 (1, 'PENDING', 'Session waiting to be processed'),
@@ -42,13 +47,13 @@ INSERT INTO APP_USER (
 (2, 2, 'carlos.gomez@test.com', 'Carlos', 'Gómez', '1995-09-20'),
 (3, 3, 'laura.martinez@test.com', 'Laura', 'Martínez', '2000-01-15');
 
--- Credenciales de autenticación
+-- Credenciales de autenticación (Password: Test1234! para pruebas en MSAuth)
 INSERT INTO AUTH_CREDENTIAL (
   ID_CREDENTIAL, ID_USER, PASSWORD_HASH, IS_ACTIVE
 ) VALUES
-(1, 1, 'hash_ana_123', true),
-(2, 2, 'hash_carlos_123', true),
-(3, 3, 'hash_laura_123', true);
+(1, 1, '$2b$12$L1AGUvpJTKxwObXFT8V4H.0mO6bFQHL79NZVRdO11XB/AgOjfrK6a', true),
+(2, 2, '$2b$12$8FVRdQj33nPzvXAUVHwR..fBMM2lbPmbb19Oy1pXvyJQgl9fOrES.', true),
+(3, 3, '$2b$12$UzqOBfEYO/nDXEcIu2tR.OAwmAXUoNf04RnjI3HNnxpi8l4qKE9z.', true);
 
 -- Wearables
 INSERT INTO WEARABLE (
@@ -104,6 +109,8 @@ INSERT INTO ALERT (
 
 
 SELECT setval('country_id_country_seq', COALESCE((SELECT MAX(id_country) FROM country), 1), true);
+
+SELECT setval('region_id_region_seq', COALESCE((SELECT MAX(id_region) FROM region), 1), true);
 
 SELECT setval('city_id_city_seq', COALESCE((SELECT MAX(id_city) FROM city), 1), true);
 
