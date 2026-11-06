@@ -11,8 +11,9 @@ CREATE TABLE IF NOT EXISTS clinical_validation_record (
     -- Relación con el Médico / Evaluador que realiza la toma y sincroniza
     evaluator_user_id INT REFERENCES app_user(id_user) ON DELETE SET NULL,
     id_wearable INT REFERENCES wearable(id_wearable) ON DELETE SET NULL,
-    smartwatch_model VARCHAR(64) DEFAULT 'Galaxy Watch 7',
+    smartwatch_model VARCHAR(64),
     consent_accepted BOOLEAN NOT NULL DEFAULT TRUE,
+    institution VARCHAR(128) DEFAULT 'Hospital Universitario San Rafael',
 
     -- Identificación y Diseño del Estudio (3 campos)
     patient_code VARCHAR(32) NOT NULL,
@@ -73,8 +74,7 @@ CREATE INDEX IF NOT EXISTS idx_cvr_evaluator ON clinical_validation_record(evalu
 CREATE INDEX IF NOT EXISTS idx_cvr_outcome ON clinical_validation_record(validation_outcome);
 CREATE INDEX IF NOT EXISTS idx_cvr_created_at ON clinical_validation_record(created_at);
 
-
 -- Migración evolutiva para instancias ya desplegadas en Neon
-ALTER TABLE clinical_validation_record ADD COLUMN IF NOT EXISTS smartwatch_model VARCHAR(64) DEFAULT 'Galaxy Watch 7';
+ALTER TABLE clinical_validation_record ADD COLUMN IF NOT EXISTS smartwatch_model VARCHAR(64);
 ALTER TABLE clinical_validation_record ADD COLUMN IF NOT EXISTS consent_accepted BOOLEAN NOT NULL DEFAULT TRUE;
 ALTER TABLE clinical_validation_record ADD COLUMN IF NOT EXISTS institution VARCHAR(128) DEFAULT 'Hospital Universitario San Rafael';
