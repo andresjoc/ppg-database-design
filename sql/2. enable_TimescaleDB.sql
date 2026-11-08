@@ -1,19 +1,27 @@
 -- ==============================================================================
 -- 2. Habilitación y Optimización de TimescaleDB para HeartSense PPG Time-Series
+-- Compatible con TimescaleDB Cloud/Neon y entornos PostgreSQL estándar (Fallback)
 -- ==============================================================================
 
--- 1) Habilitar la extensión TimescaleDB
-CREATE EXTENSION IF NOT EXISTS timescaledb;
-
--- 2) Convertir ppg_sample en Hypertable particionada por 'ts'
--- Como 'ts' está en milisegundos (Unix timestamp ms), se especifica un chunk_time_interval de 1 día:
--- 1 día = 24 * 60 * 60 * 1000 = 86,400,000 milisegundos
-SELECT create_hypertable(
-    'ppg_sample',
-    'ts',
-    chunk_time_interval => BIGINT '86400000',
-    if_not_exists => TRUE
-);
+-- 1) y 2) Habilitar extensión TimescaleDB y convertir ppg_sample en Hypertable si está disponible
+DO $$
+BEGIN
+    CREATE EXTENSION IF NOT EXISTS timescaledb;
+    PERFORM create_hypertable(
+        'ppg_sample',
+        'ts',
+        chunk_time_interval => BIGINT '86400000',
+        if_not_exists => TRUE
+    );
+    RAISE NOTICE 'TimescaleDB habilitado y ppg_sample configurada como Hypertable (chunk=86400000 ms).';
+EXCEPTION
+    WHEN undefined_file THEN
+        RAISE NOTICE 'TimescaleDB no está instalado en este servidor PostgreSQL. ppg_sample operará como tabla estándar.';
+    WHEN undefined_function THEN
+        RAISE NOTICE 'Función create_hypertable no disponible. ppg_sample operará como tabla estándar.';
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Aviso TimescaleDB: %. ppg_sample operará como tabla estándar.', SQLERRM;
+END $$;
 
 -- 3) Crear índices optimizados para consultas de series temporales y frontend
 -- Índice para recuperar muestras de una sesión ordenadas por tiempo (gráfico de Flutter)
@@ -24,19 +32,14 @@ ON ppg_sample (id_session, ts ASC);
 CREATE INDEX IF NOT EXISTS idx_monitoring_session_user_created 
 ON monitoring_session (id_user, created_at DESC);
 
--- 4) Nota sobre la compresión nativa en proveedores en la nube (como Neon):
--- Neon distribuye TimescaleDB bajo licencia Apache 2.0. Las políticas de compresión automática 
--- (add_compression_policy) requieren la licencia propietaria Timescale Community / Cloud (TSL).
--- En caso de usar Timescale Cloud o una instancia autohospedada con licencia completa,
--- se puede activar la compresión ejecutando:
---
--- ALTER TABLE ppg_sample SET (
---     timescaledb.compress,
---     timescaledb.compress_segmentby = 'id_session',
---     timescaledb.compress_orderby = 'ts ASC'
--- );
+-- 4) Nota sobre compresión nativa:
+-- ALTER TABLE ppg_sample SET (timescaledb.compress, timescaledb.compress_segmentby = 'id_session', timescaledb.compress_orderby = 'ts ASC');
 -- SELECT add_compression_policy('ppg_sample', BIGINT '604800000', if_not_exists => TRUE);
--- SELECT add_retention_policy('ppg_sample', BIGINT '63072000000', if_not_exists => TRUE);
 
--- 5) Verificación de configuración
-SELECT * FROM timescaledb_information.hypertables WHERE hypertable_name = 'ppg_sample';
+-- 5) Verificación de configuración segura
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'timescaledb') THEN
+        PERFORM * FROM timescaledb_information.hypertables WHERE hypertable_name = 'ppg_sample';
+    END IF;
+END $$;
