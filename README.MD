@@ -95,7 +95,16 @@ SELECT create_hypertable(
 
 ---
 
-### Opción A: Despliegue con Docker (Recomendado para desarrollo local)
+### 1. Clonar y Acceder al Repositorio
+
+```bash
+git clone https://github.com/andresjoc/ppg-database-design.git
+cd ppg-database-design
+```
+
+---
+
+### Opción A: Despliegue con Docker (Opcional para desarrollo local)
 
 Si deseas levantar una base de datos local con PostgreSQL y TimescaleDB listos en 1 minuto:
 
