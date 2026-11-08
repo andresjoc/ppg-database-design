@@ -1,5 +1,5 @@
 -- ==============================================================================
--- 2. Habilitación y Optimización de TimescaleDB para HeartSense PPG Time-Series
+-- 2. Habilitación y Optimización de TimescaleDB para Auricular Sense PPG Time-Series
 -- Compatible con TimescaleDB Cloud/Neon y entornos PostgreSQL estándar (Fallback)
 -- ==============================================================================
 

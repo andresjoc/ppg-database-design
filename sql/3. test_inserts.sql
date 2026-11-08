@@ -1,5 +1,5 @@
 -- ==============================================================================
--- 3. Inserciones de Datos de Prueba para HeartSense
+-- 3. Inserciones de Datos de Prueba para Auricular Sense
 -- Compatible con PostgreSQL 17, Neon Database y TimescaleDB
 -- ==============================================================================
 
