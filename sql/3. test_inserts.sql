@@ -31,7 +31,18 @@ INSERT INTO WEARABLE_MODEL (ID_WEARABLE_MODEL, BRAND, MODEL) VALUES
 (3, 'PineTime', 'Dev Kit')
 ON CONFLICT (ID_WEARABLE_MODEL) DO NOTHING;
 
--- 2. Usuarios de Prueba (Usa IDs de ciudades existentes en Neon: 7796=Bogotá, 17336=Envigado)
+-- 1.1 Catálogo Geográfico Mínimo (Garantiza que existan las ciudades referenciadas si no se cargó neon_data_extracted.sql)
+INSERT INTO COUNTRY (ID_COUNTRY, NAME) VALUES (49, 'Colombia') ON CONFLICT (ID_COUNTRY) DO NOTHING;
+INSERT INTO REGION (ID_REGION, ID_COUNTRY, NAME) VALUES 
+(976, 49, 'Cundinamarca'),
+(964, 49, 'Antioquia')
+ON CONFLICT (ID_REGION) DO NOTHING;
+INSERT INTO CITY (ID_CITY, ID_REGION, NAME) VALUES 
+(7796, 976, 'Bogota'),
+(17336, 964, 'Envigado')
+ON CONFLICT (ID_CITY) DO NOTHING;
+
+-- 2. Usuarios de Prueba (Usa IDs de ciudades existentes: 7796=Bogotá, 17336=Envigado)
 INSERT INTO APP_USER (
   ID_USER, ID_CITY, EMAIL, FIRST_NAME, LAST_NAME, BIRTH_DATE
 ) VALUES

@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS clinical_validation_record (
     ai_confidence NUMERIC(5, 4) NOT NULL,
     heart_rate_bpm NUMERIC(5, 2) NOT NULL,
     hrv_rmssd NUMERIC(6, 2) NOT NULL,
-    hrv_sdnn NUMERIC(6, 2) NOT NULL DEFAULT 0.0,
+    hrv_sdnn NUMERIC(6, 2) DEFAULT 0.0,
     blood_oxygen_level NUMERIC(4, 1),        -- Saturación SpO2 calculada en % para Galaxy Watch
     is_tachycardic BOOLEAN NOT NULL DEFAULT FALSE,
     recorded_beats_count INT NOT NULL DEFAULT 0,
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS clinical_validation_record (
     -- Control de Sincronización
     sync_status VARCHAR(20) NOT NULL DEFAULT 'SYNCED',
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    synced_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+    synced_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Índices de alto rendimiento para filtros clínicos y auditoría

@@ -388,7 +388,7 @@ create table PPG_SAMPLE (
    GREEN               INT4                 not null,
    RED                 INT4                 null,
    IR                   INT4                 null,
-   constraint PK_PPG_SAMPLE primary key (ID_PPG_SAMPLE)
+   constraint PK_PPG_SAMPLE primary key (ID_PPG_SAMPLE, TS)
 );
 
 comment on table PPG_SAMPLE is
@@ -398,7 +398,8 @@ comment on table PPG_SAMPLE is
 /* Index: PPG_SAMPLE_PK                                         */
 /*==============================================================*/
 create unique index PPG_SAMPLE_PK on PPG_SAMPLE (
-ID_PPG_SAMPLE
+ID_PPG_SAMPLE,
+TS
 );
 
 /*==============================================================*/
